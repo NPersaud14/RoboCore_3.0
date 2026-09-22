@@ -1,0 +1,9 @@
+Packages include:
+    FTC SDK
+    Panels by Lazar
+    Sloth Load by Dairy Foundation
+    PedroPathing
+    Ivy
+    NextFTC V2
+    Marrow
+    Lombok
