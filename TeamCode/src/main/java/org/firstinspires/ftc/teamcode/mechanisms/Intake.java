@@ -9,7 +9,11 @@ import dev.nextftc.robot.Mechanism;
 public class Intake implements Mechanism {
     NextMotor motor = new NextMotor(RobotController.expansionHub(), 0);
 
-    public Command run() { return instant(() -> motor.setThrottle(1)); }
+    public Command run() {
+        return instant(() -> motor.setThrottle(1));
+    }
 
-    public Command stop() { return instant(() -> motor.setThrottle(0)); }
+    public Command stop() {
+        return instant(() -> motor.setThrottle(0));
+    }
 }

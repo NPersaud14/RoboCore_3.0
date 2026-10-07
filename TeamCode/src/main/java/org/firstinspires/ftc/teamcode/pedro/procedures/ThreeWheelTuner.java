@@ -25,6 +25,42 @@ public class ThreeWheelTuner extends Procedure {
         super("Three Wheel Tuner", "Tune three odometry pods");
     }
 
+    static String direction(double direction) {
+        return direction == Encoder.REVERSE ? "Encoder.REVERSE" : "Encoder.FORWARD";
+    }
+
+    static ThreeWheelConfig config(boolean left, double forward, double strafe,
+                                   double leftDirection, double rightDirection, double strafeDirection) {
+        return new ThreeWheelConfig(c -> {
+            c.leftEncoderName.set(leftEncoderName);
+            c.rightEncoderName.set(rightEncoderName);
+            c.strafeEncoderName.set(strafeEncoderName);
+            c.leftPodY.set(left ? 0.0 : 1.0);
+            c.rightPodY.set(left ? -1.0 : 0.0);
+            c.strafePodX.set(0.0);
+            c.forwardTicksToInches.set(forward);
+            c.strafeTicksToInches.set(strafe);
+            c.turnTicksToRadians.set(0.0);
+            c.leftEncoderDirection.set(leftDirection);
+            c.rightEncoderDirection.set(rightDirection);
+            c.strafeEncoderDirection.set(strafeDirection);
+        });
+    }
+
+    static ThreeWheelLocalizer localizer(HardwareMap map, ThreeWheelConfig config) {
+        for (LynxModule hub : map.getAll(LynxModule.class)) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+        for (String name : new String[]{"lf", "lr", "rf", "rr"}) {
+            DcMotorEx motor = map.get(DcMotorEx.class, name);
+            motor.setPower(0);
+            motor.setDirection(name.equals("lf") || name.equals("lr")
+                    ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        return new ThreeWheelLocalizer(map, config);
+    }
+
     @Override
     public void run() throws InterruptedException {
         Inputs setup = inputs("Encoder Setup",
@@ -134,42 +170,6 @@ public class ThreeWheelTuner extends Procedure {
             return null;
         }
         return measured;
-    }
-
-    static String direction(double direction) {
-        return direction == Encoder.REVERSE ? "Encoder.REVERSE" : "Encoder.FORWARD";
-    }
-
-    static ThreeWheelConfig config(boolean left, double forward, double strafe,
-                                   double leftDirection, double rightDirection, double strafeDirection) {
-        return new ThreeWheelConfig(c -> {
-            c.leftEncoderName.set(leftEncoderName);
-            c.rightEncoderName.set(rightEncoderName);
-            c.strafeEncoderName.set(strafeEncoderName);
-            c.leftPodY.set(left ? 0.0 : 1.0);
-            c.rightPodY.set(left ? -1.0 : 0.0);
-            c.strafePodX.set(0.0);
-            c.forwardTicksToInches.set(forward);
-            c.strafeTicksToInches.set(strafe);
-            c.turnTicksToRadians.set(0.0);
-            c.leftEncoderDirection.set(leftDirection);
-            c.rightEncoderDirection.set(rightDirection);
-            c.strafeEncoderDirection.set(strafeDirection);
-        });
-    }
-
-    static ThreeWheelLocalizer localizer(HardwareMap map, ThreeWheelConfig config) {
-        for (LynxModule hub : map.getAll(LynxModule.class)) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-        for (String name : new String[]{"lf", "lr", "rf", "rr"}) {
-            DcMotorEx motor = map.get(DcMotorEx.class, name);
-            motor.setPower(0);
-            motor.setDirection(name.equals("lf") || name.equals("lr")
-                    ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        }
-        return new ThreeWheelLocalizer(map, config);
     }
 }
 

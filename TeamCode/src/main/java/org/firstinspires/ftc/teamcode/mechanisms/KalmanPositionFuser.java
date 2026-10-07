@@ -14,10 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import dev.nextftc.robot.Mechanism;
 
 /**
- * KalmanPositionFuser fuses high-frequency local odometry (Pinpoint) with 
+ * KalmanPositionFuser fuses high-frequency local odometry (Pinpoint) with
  * absolute global vision (Limelight 3A) to provide a more accurate robot pose.
- *
- * This class implements the NextFTC Mechanism interface, allowing its periodic 
+ * <p>
+ * This class implements the NextFTC Mechanism interface, allowing its periodic
  * method to be called automatically by the robot loop.
  */
 public class KalmanPositionFuser implements Mechanism {
@@ -87,7 +87,7 @@ public class KalmanPositionFuser implements Mechanism {
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
             Pose3D botpose = result.getBotpose();
-            
+
             // Convert Limelight meters to inches for PedroPathing
             double llX = botpose.getPosition().x * 39.3701;
             double llY = botpose.getPosition().y * 39.3701;
@@ -96,7 +96,7 @@ public class KalmanPositionFuser implements Mechanism {
             // Kalman Fusion
             xFilter.update(dx, llX);
             yFilter.update(dy, llY);
-            
+
             // Normalize heading to take the shortest path around the circle
             double normalizedLLHeading = normalizeAngle(llHeading, headingFilter.state());
             headingFilter.update(dHeading, normalizedLLHeading);
@@ -110,9 +110,9 @@ public class KalmanPositionFuser implements Mechanism {
         // 3. Update PedroPathing logic
         // PedroPathing Poses use Radians for heading internally.
         follower.setPose(new Pose(
-            xFilter.state(),
-            yFilter.state(),
-            Math.toRadians(headingFilter.state())
+                xFilter.state(),
+                yFilter.state(),
+                Math.toRadians(headingFilter.state())
         ));
     }
 
